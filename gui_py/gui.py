@@ -16,11 +16,13 @@ class Window (QWidget):
         self.init_objects()
         self.update()
         self.show()
+
     def init_objects(self):
         self.layout = QVBoxLayout()
         self.imgButton = QPushButton(self.descriptionImgButton, self)
         self.label_letter_count = QLabel(self.descriptionLetterCount, self)
         self.label_analysis_time = QLabel(self.descriptionTimeAnalysis, self)
+
     def update(self):
         if Window:
             self.resize(self.windowWidth, self.windowHeight)
@@ -33,13 +35,17 @@ class Window (QWidget):
 
         if self.imgButton:
             self.imgButton.move(0, 2*self.descriptionWindowLocation_Y)
+
     def button_clicked(self):
         self.imgButton.clicked.connect(self.create_dialog)
+
     def get_image(self, selectedFile):
         perceptron.image_path = selectedFile
         self.run_perceptron()
+
     def run_perceptron(self):
         perceptron.run()
+
     def create_dialog(self):
         file_dialog = QFileDialog(self)
         file_dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
@@ -47,6 +53,7 @@ class Window (QWidget):
         file_dialog.setViewMode(QFileDialog.ViewMode.List)
         file_dialog.fileSelected.connect(self.on_file_selected)
         file_dialog.exec()
+
     def on_file_selected(self, selected_file):
         if selected_file:
             self.get_image(selected_file)

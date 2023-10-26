@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import keras
 import tensorflow
-from keras.layers import Dense, Conv2D, Flatten, MaxPool2D, Dropout, BatchNormalization
+from keras.layers import Dense, Conv2D, Flatten, MaxPool2D, Dropout
 from keras.utils import to_categorical
 import emnist
 
@@ -25,6 +25,7 @@ class NeuralCNN:
                 normalized_gray_image = cv2.normalize(resized_gray_image, None, 0, 255, cv2.NORM_MINMAX)
                 self.processed_images.append(normalized_gray_image)
             return np.array(self.processed_images)
+
     def get_training_data(self):
         if self.emnist_data:
             self.emnist_images, self.emnist_labels = self.emnist_data
@@ -33,9 +34,6 @@ class NeuralCNN:
         else:
             print(BufferError)
 
-    # # Wczytaj zbiór danych EMNIST ByClass
-    # emnist_data = emnist.extract_training_samples('byclass')
-    # emnist_images, emnist_labels = emnist_data
     def init_training_data(self):
         x_train = self.emnist_images[:50000]
         y_train = self.emnist_labels[:50000]
@@ -73,6 +71,7 @@ class NeuralCNN:
         self.model.add(Dense(256, activation='softmax'))
         if self.model:
             self.model_setup(self.model)
+
     def model_setup(self, model):
         self.model = model
         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
