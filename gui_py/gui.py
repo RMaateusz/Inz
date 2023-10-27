@@ -13,34 +13,47 @@ class Window (QWidget):
         super(Window, self).__init__()
         self.initUI()
         self.show()
+        self.selected_file = None
 
     def initUI(self):
         self.descriptionImgButton = "Upload image"
         self.descriptionWindowTitle = "Image Recognition API made by Mateusz Rosa"
         self.descriptionExitButton = "Exit"
+        self.descriptionLoadCNN_Sequential = "Sequential CNN Analysis"
+        self.imageNotExist_warning = "Image is not uploaded!"
+
         self.descriptionWindowLocation_X = 50
         self.descriptionWindowLocation_Y = 50
-        self.windowWidth = 250
-        self.windowHeight = 250
+        self.windowWidth = 500
+        self.windowHeight = 500
 
         self.setWindowTitle(self.descriptionWindowTitle)
         self.setGeometry(self.descriptionWindowLocation_X, self.descriptionWindowLocation_Y, self.windowWidth, self.windowHeight)
 
         layout = QVBoxLayout()
 
-        imgButton = QPushButton(self.descriptionImgButton, self)
-        exitButton = QPushButton(self.descriptionExitButton, self)
+        self.imgButton = QPushButton(self.descriptionImgButton, self)
+        self.exitButton = QPushButton(self.descriptionExitButton, self)
+        self.loadCNN_Sequential = QPushButton(self.descriptionLoadCNN_Sequential, self)
 
-        layout.addWidget(imgButton, Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(exitButton, Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.imgButton, Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.loadCNN_Sequential, Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.exitButton, Qt.AlignmentFlag.AlignCenter)
+
         self.setLayout(layout)
 
-        imgButton.clicked.connect(self.create_dialog)
-        exitButton.clicked.connect(self.exit_app)
+        self.messageLayout = QHBoxLayout()
+        self.messageLayout.addWidget(self.loadCNN_Sequential, Qt.AlignmentFlag.AlignCenter)
+        self.setLayout(self.messageLayout)
+
+        layout.addLayout(self.messageLayout)
+        self.imgButton.clicked.connect(self.create_dialog)
+        self.loadCNN_Sequential.clicked.connect(self.loadCNN_Sequential_analysis)
+        self.exitButton.clicked.connect(self.exit_app)
+
 
     def get_image(self, selectedFile):
         perceptron.image_path = selectedFile
-        self.run_perceptron()
 
     def run_perceptron(self):
         perceptron.run()
@@ -54,8 +67,19 @@ class Window (QWidget):
         file_dialog.exec()
 
     def on_file_selected(self, selected_file):
-        if selected_file:
-            self.get_image(selected_file)
+        self.selected_file = selected_file
+        if self.selected_file:
+            self.get_image(self.selected_file)
+
+    def loadCNN_Sequential_analysis(self):
+        if self.selected_file is not None:
+            self.run_perceptron()
+        else:
+            self.loadCNN_Sequential.clicked.connect(self.analysis_warning)
+
+
+    def analysis_warning(self):
+        QMessageBox.warning(self, 'Warning',self.imageNotExist_warning)
 
     def exit_app(self):
         return self.close()
