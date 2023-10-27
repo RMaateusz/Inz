@@ -2,36 +2,41 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 import perceptron
 class Window (QWidget):
-    descriptionImgButton = "Upload image"
-    descriptionWindowTitle = "Image Recognition API made by Mateusz Rosa"
-    descriptionWindowLocation_X = 50
-    descriptionWindowLocation_Y = 50
-    windowWidth = 250
-    windowHeight = 250
-
     def __init__(self):
+        self.descriptionWindowLocation_Y = 0
+        self.descriptionWindowLocation_X = 0
+        self.windowWidth = 0
+        self.windowHeight = 0
+        self.descriptionImgButton = ""
+        self.descriptionExitButton = ""
+        self.descriptionWindowTitle = ""
         super(Window, self).__init__()
-        self.init_objects()
-        self.update()
+        self.initUI()
         self.show()
 
-    def init_objects(self):
-        self.layout = QVBoxLayout()
-        self.imgButton = QPushButton(self.descriptionImgButton, self)
+    def initUI(self):
+        self.descriptionImgButton = "Upload image"
+        self.descriptionWindowTitle = "Image Recognition API made by Mateusz Rosa"
+        self.descriptionExitButton = "Exit"
+        self.descriptionWindowLocation_X = 50
+        self.descriptionWindowLocation_Y = 50
+        self.windowWidth = 250
+        self.windowHeight = 250
 
-    def update(self):
-        if Window:
-            self.resize(self.windowWidth, self.windowHeight)
+        self.setWindowTitle(self.descriptionWindowTitle)
+        self.setGeometry(self.descriptionWindowLocation_X, self.descriptionWindowLocation_Y, self.windowWidth, self.windowHeight)
 
-        if self.layout:
-            self.layout.addWidget(self.imgButton, Qt.AlignmentFlag.AlignLeft)
-            self.setLayout(self.layout)
+        layout = QVBoxLayout()
 
-        if self.imgButton:
-            self.imgButton.move(0, 2*self.descriptionWindowLocation_Y)
+        imgButton = QPushButton(self.descriptionImgButton, self)
+        exitButton = QPushButton(self.descriptionExitButton, self)
 
-    def button_clicked(self):
-        self.imgButton.clicked.connect(self.create_dialog)
+        layout.addWidget(imgButton, Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(exitButton, Qt.AlignmentFlag.AlignCenter)
+        self.setLayout(layout)
+
+        imgButton.clicked.connect(self.create_dialog)
+        exitButton.clicked.connect(self.exit_app)
 
     def get_image(self, selectedFile):
         perceptron.image_path = selectedFile
@@ -52,3 +57,5 @@ class Window (QWidget):
         if selected_file:
             self.get_image(selected_file)
 
+    def exit_app(self):
+        return self.close()
