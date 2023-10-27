@@ -8,6 +8,8 @@ import emnist
 
 image_path = ""
 
+val_loss = 0.0
+val_acc = 0.0
 class NeuralCNN:
     def __init__(self):
         self.emnist_data = emnist.extract_training_samples('byclass')

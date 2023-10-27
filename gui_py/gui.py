@@ -31,22 +31,29 @@ class Window (QWidget):
         self.setGeometry(self.descriptionWindowLocation_X, self.descriptionWindowLocation_Y, self.windowWidth, self.windowHeight)
 
         layout = QVBoxLayout()
+        self.messageLayout = QHBoxLayout()
+        self.lossResult = QLabel()
+        self.accuracyResult = QLabel()
+
+        self.lossResult.setText(f"Loss rating: {perceptron.val_loss}")
+        self.accuracyResult.setText(f"Accuracy rating: {perceptron.val_acc}")
 
         self.imgButton = QPushButton(self.descriptionImgButton, self)
         self.exitButton = QPushButton(self.descriptionExitButton, self)
         self.loadCNN_Sequential = QPushButton(self.descriptionLoadCNN_Sequential, self)
 
+        layout.addWidget(self.lossResult, Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(self.accuracyResult, Qt.AlignmentFlag.AlignLeft)
         layout.addWidget(self.imgButton, Qt.AlignmentFlag.AlignCenter)
+        self.messageLayout.addWidget(self.loadCNN_Sequential, Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.loadCNN_Sequential, Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.exitButton, Qt.AlignmentFlag.AlignCenter)
 
         self.setLayout(layout)
-
-        self.messageLayout = QHBoxLayout()
-        self.messageLayout.addWidget(self.loadCNN_Sequential, Qt.AlignmentFlag.AlignCenter)
         self.setLayout(self.messageLayout)
 
         layout.addLayout(self.messageLayout)
+
         self.imgButton.clicked.connect(self.create_dialog)
         self.loadCNN_Sequential.clicked.connect(self.loadCNN_Sequential_analysis)
         self.exitButton.clicked.connect(self.exit_app)
