@@ -3,10 +3,10 @@ from PyQt6.QtCore import *
 import perceptron
 class Window (QWidget):
     def __init__(self):
-        self.descriptionWindowLocation_Y = 0
-        self.descriptionWindowLocation_X = 0
-        self.windowWidth = 0
-        self.windowHeight = 0
+        self.descriptionWindowLocation_X = 50
+        self.descriptionWindowLocation_Y = 50
+        self.windowWidth = 500
+        self.windowHeight = 500
         self.descriptionImgButton = ""
         self.descriptionExitButton = ""
         self.descriptionWindowTitle = ""
@@ -22,10 +22,7 @@ class Window (QWidget):
         self.descriptionLoadCNN_Sequential = "Sequential CNN Analysis"
         self.imageNotExist_warning = "Image is not uploaded!"
 
-        self.descriptionWindowLocation_X = 50
-        self.descriptionWindowLocation_Y = 50
-        self.windowWidth = 500
-        self.windowHeight = 500
+
 
         self.setWindowTitle(self.descriptionWindowTitle)
         self.setGeometry(self.descriptionWindowLocation_X, self.descriptionWindowLocation_Y, self.windowWidth, self.windowHeight)
