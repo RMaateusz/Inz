@@ -2,8 +2,6 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 import perceptron
 class Window (QWidget):
-    descriptionLetterCount = "Letter count: "
-    descriptionTimeAnalysis = "Analysis time: "
     descriptionImgButton = "Upload image"
     descriptionWindowTitle = "Image Recognition API made by Mateusz Rosa"
     descriptionWindowLocation_X = 50
@@ -20,8 +18,6 @@ class Window (QWidget):
     def init_objects(self):
         self.layout = QVBoxLayout()
         self.imgButton = QPushButton(self.descriptionImgButton, self)
-        self.label_letter_count = QLabel(self.descriptionLetterCount, self)
-        self.label_analysis_time = QLabel(self.descriptionTimeAnalysis, self)
 
     def update(self):
         if Window:
@@ -29,8 +25,6 @@ class Window (QWidget):
 
         if self.layout:
             self.layout.addWidget(self.imgButton, Qt.AlignmentFlag.AlignLeft)
-            self.layout.addWidget(self.label_analysis_time, Qt.AlignmentFlag.AlignLeft)
-            self.layout.addWidget(self.label_letter_count, Qt.AlignmentFlag.AlignLeft)
             self.setLayout(self.layout)
 
         if self.imgButton:
