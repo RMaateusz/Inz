@@ -1,6 +1,12 @@
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 import perceptron
+
+global gui_acc
+global gui_loss
+gui_acc = 0.0
+gui_loss = 0.0
+
 class Window (QWidget):
     def __init__(self):
         self.descriptionWindowLocation_X = 50
@@ -14,7 +20,12 @@ class Window (QWidget):
         self.initUI()
         self.show()
         self.selected_file = None
+        self.isFinished = False
 
+    def get_data(self, data_loss, data_acc):
+        gui_acc= data_acc
+        gui_loss = data_loss
+        return gui_acc, gui_loss
     def initUI(self):
         self.descriptionImgButton = "Upload image"
         self.descriptionWindowTitle = "Image Recognition API made by Mateusz Rosa"
@@ -22,38 +33,39 @@ class Window (QWidget):
         self.descriptionLoadCNN_Sequential = "Sequential CNN Analysis"
         self.imageNotExist_warning = "Image is not uploaded!"
 
-
-
         self.setWindowTitle(self.descriptionWindowTitle)
         self.setGeometry(self.descriptionWindowLocation_X, self.descriptionWindowLocation_Y, self.windowWidth, self.windowHeight)
 
-        layout = QVBoxLayout()
+        self.layout = QVBoxLayout()
         self.messageLayout = QHBoxLayout()
         self.lossResult = QLabel()
         self.accuracyResult = QLabel()
-
-        self.lossResult.setText(f"Loss rating: {perceptron.val_loss}")
-        self.accuracyResult.setText(f"Accuracy rating: {perceptron.val_acc}")
+        self.lossResult.setText(f"Loss rating: {gui_loss}")
+        self.accuracyResult.setText(f"Accuracy rating: {gui_acc}")
 
         self.imgButton = QPushButton(self.descriptionImgButton, self)
         self.exitButton = QPushButton(self.descriptionExitButton, self)
         self.loadCNN_Sequential = QPushButton(self.descriptionLoadCNN_Sequential, self)
 
-        layout.addWidget(self.lossResult, Qt.AlignmentFlag.AlignLeft)
-        layout.addWidget(self.accuracyResult, Qt.AlignmentFlag.AlignLeft)
-        layout.addWidget(self.imgButton, Qt.AlignmentFlag.AlignCenter)
+        self.layout.addWidget(self.lossResult, Qt.AlignmentFlag.AlignLeft)
+        self.layout.addWidget(self.accuracyResult, Qt.AlignmentFlag.AlignLeft)
+        self.layout.addWidget(self.imgButton, Qt.AlignmentFlag.AlignCenter)
         self.messageLayout.addWidget(self.loadCNN_Sequential, Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.loadCNN_Sequential, Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.exitButton, Qt.AlignmentFlag.AlignCenter)
+        self.layout.addWidget(self.loadCNN_Sequential, Qt.AlignmentFlag.AlignCenter)
+        self.layout.addWidget(self.exitButton, Qt.AlignmentFlag.AlignCenter)
 
-        self.setLayout(layout)
+        self.setLayout(self.layout)
         self.setLayout(self.messageLayout)
 
-        layout.addLayout(self.messageLayout)
+        self.layout.addLayout(self.messageLayout)
 
         self.imgButton.clicked.connect(self.create_dialog)
         self.loadCNN_Sequential.clicked.connect(self.loadCNN_Sequential_analysis)
         self.exitButton.clicked.connect(self.exit_app)
+
+    def updateData(self):
+        self.lossResult.setText(f"Loss rating: {gui_loss}")
+        self.accuracyResult.setText(f"Accuracy rating: {gui_acc}")
 
 
     def get_image(self, selectedFile):
@@ -61,6 +73,7 @@ class Window (QWidget):
 
     def run_perceptron(self):
         perceptron.run()
+        self.updateData()
 
     def create_dialog(self):
         file_dialog = QFileDialog(self)
@@ -80,7 +93,6 @@ class Window (QWidget):
             self.run_perceptron()
         else:
             self.loadCNN_Sequential.clicked.connect(self.analysis_warning)
-
 
     def analysis_warning(self):
         QMessageBox.warning(self, 'Warning',self.imageNotExist_warning)

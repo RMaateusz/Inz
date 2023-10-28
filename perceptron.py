@@ -6,10 +6,10 @@ from keras.layers import Dense, Conv2D, Flatten, MaxPool2D, Dropout
 from keras.utils import to_categorical
 import emnist
 
+import gui_py.gui
+
 image_path = ""
 
-val_loss = 0.0
-val_acc = 0.0
 class NeuralCNN:
     def __init__(self):
         self.emnist_data = emnist.extract_training_samples('byclass')
@@ -82,7 +82,8 @@ class NeuralCNN:
         val_loss, val_acc = model.evaluate(x_test, y_test)
         print('validation accuracy:', val_acc)
         print('validation loss:', val_loss)
-        boolean = True
+        gui_py.gui.gui_acc = val_acc
+        gui_py.gui.gui_loss = val_loss
 
     def image_analysis(self):
         img_src   = image_path
@@ -119,10 +120,7 @@ class NeuralCNN:
                 cv2.rectangle(thresh, (down_left, upper_left), (down_left + down_right, upper_left + upper_right), (0, 255, 0), 2)
                 cv2.putText(thresh, letter, (down_left, upper_left), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
-            cv2.imshow('Detected Letters', thresh)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
-            print(len(detected_letters), detected_letters)
+
 
 def run():
     neural_obj = NeuralCNN()
@@ -130,3 +128,4 @@ def run():
     neural_obj.get_training_data()
     neural_obj.init_CNN_Model()
     neural_obj.image_analysis()
+
