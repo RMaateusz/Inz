@@ -38,16 +38,15 @@ class Window (QWidget):
 
         self.lossResult = QLabel()
         self.accuracyResult = QLabel()
+        self.imgButton = QPushButton(self.descriptionImgButton, self)
+        self.exitButton = QPushButton(self.descriptionExitButton, self)
+        self.loadCNN_Sequential = QPushButton(self.descriptionLoadCNN_Sequential, self)
 
         self.init_layout()
 
         self.lossResult.setText(f"Loss rating: {gui_loss}")
         self.accuracyResult.setText(f"Accuracy rating: {gui_acc}")
         self.lossResult.setGeometry(0, 450, 100, 100)
-
-        self.imgButton = QPushButton(self.descriptionImgButton, self)
-        self.exitButton = QPushButton(self.descriptionExitButton, self)
-        self.loadCNN_Sequential = QPushButton(self.descriptionLoadCNN_Sequential, self)
 
         self.imgButton.clicked.connect(self.create_dialog)
         self.loadCNN_Sequential.clicked.connect(self.loadCNN_Sequential_analysis)
