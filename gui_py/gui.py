@@ -36,10 +36,10 @@ class Window (QWidget):
         self.setWindowTitle(self.descriptionWindowTitle)
         self.setGeometry(self.descriptionWindowLocation_X, self.descriptionWindowLocation_Y, self.windowWidth, self.windowHeight)
 
-        self.layout = QVBoxLayout()
-        self.messageLayout = QHBoxLayout()
         self.lossResult = QLabel()
         self.accuracyResult = QLabel()
+
+        self.init_layout()
 
         self.lossResult.setText(f"Loss rating: {gui_loss}")
         self.accuracyResult.setText(f"Accuracy rating: {gui_acc}")
@@ -49,18 +49,24 @@ class Window (QWidget):
         self.exitButton = QPushButton(self.descriptionExitButton, self)
         self.loadCNN_Sequential = QPushButton(self.descriptionLoadCNN_Sequential, self)
 
+        self.imgButton.clicked.connect(self.create_dialog)
+        self.loadCNN_Sequential.clicked.connect(self.loadCNN_Sequential_analysis)
+        self.exitButton.clicked.connect(self.exit_app)
+
+    def init_layout(self):
+        self.layout = QVBoxLayout()
+        self.messageLayout = QHBoxLayout()
+
         self.layout.addWidget(self.lossResult)
         self.layout.addWidget(self.accuracyResult)
         self.layout.addWidget(self.imgButton)
         self.messageLayout.addWidget(self.loadCNN_Sequential)
         self.layout.addWidget(self.loadCNN_Sequential)
         self.layout.addWidget(self.exitButton)
+
         self.setLayout(self.layout)
         self.setLayout(self.messageLayout)
         self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.imgButton.clicked.connect(self.create_dialog)
-        self.loadCNN_Sequential.clicked.connect(self.loadCNN_Sequential_analysis)
-        self.exitButton.clicked.connect(self.exit_app)
 
     def updateData(self):
         self.lossResult.setText(f"Loss rating: {gui_loss}")
