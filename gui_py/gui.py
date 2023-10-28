@@ -11,8 +11,8 @@ class Window (QWidget):
     def __init__(self):
         self.descriptionWindowLocation_X = 50
         self.descriptionWindowLocation_Y = 50
-        self.windowWidth = 500
-        self.windowHeight = 500
+        self.windowWidth = 250
+        self.windowHeight = 250
         self.descriptionImgButton = ""
         self.descriptionExitButton = ""
         self.descriptionWindowTitle = ""
@@ -40,25 +40,24 @@ class Window (QWidget):
         self.messageLayout = QHBoxLayout()
         self.lossResult = QLabel()
         self.accuracyResult = QLabel()
+
         self.lossResult.setText(f"Loss rating: {gui_loss}")
         self.accuracyResult.setText(f"Accuracy rating: {gui_acc}")
+        self.lossResult.setGeometry(0, 450, 100, 100)
 
         self.imgButton = QPushButton(self.descriptionImgButton, self)
         self.exitButton = QPushButton(self.descriptionExitButton, self)
         self.loadCNN_Sequential = QPushButton(self.descriptionLoadCNN_Sequential, self)
 
-        self.layout.addWidget(self.lossResult, Qt.AlignmentFlag.AlignLeft)
-        self.layout.addWidget(self.accuracyResult, Qt.AlignmentFlag.AlignLeft)
-        self.layout.addWidget(self.imgButton, Qt.AlignmentFlag.AlignCenter)
-        self.messageLayout.addWidget(self.loadCNN_Sequential, Qt.AlignmentFlag.AlignCenter)
-        self.layout.addWidget(self.loadCNN_Sequential, Qt.AlignmentFlag.AlignCenter)
-        self.layout.addWidget(self.exitButton, Qt.AlignmentFlag.AlignCenter)
-
+        self.layout.addWidget(self.lossResult)
+        self.layout.addWidget(self.accuracyResult)
+        self.layout.addWidget(self.imgButton)
+        self.messageLayout.addWidget(self.loadCNN_Sequential)
+        self.layout.addWidget(self.loadCNN_Sequential)
+        self.layout.addWidget(self.exitButton)
         self.setLayout(self.layout)
         self.setLayout(self.messageLayout)
-
-        self.layout.addLayout(self.messageLayout)
-
+        self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.imgButton.clicked.connect(self.create_dialog)
         self.loadCNN_Sequential.clicked.connect(self.loadCNN_Sequential_analysis)
         self.exitButton.clicked.connect(self.exit_app)
@@ -66,7 +65,6 @@ class Window (QWidget):
     def updateData(self):
         self.lossResult.setText(f"Loss rating: {gui_loss}")
         self.accuracyResult.setText(f"Accuracy rating: {gui_acc}")
-
 
     def get_image(self, selectedFile):
         perceptron.image_path = selectedFile
