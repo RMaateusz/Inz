@@ -95,10 +95,10 @@ class Window (QWidget):
         if self.selected_file is not None:
             self.run_perceptron()
         else:
-            self.loadCNN_Sequential.clicked.connect(self.analysis_warning)
+            self.analysis_warning()
 
     def analysis_warning(self):
-        QMessageBox.warning(self, 'Warning',self.imageNotExist_warning)
+        return QMessageBox.warning(self, 'Warning',self.imageNotExist_warning)
 
     def exit_app(self):
         return self.close()
