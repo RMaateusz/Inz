@@ -5,6 +5,8 @@ import tensorflow
 from keras.layers import Dense, Conv2D, Flatten, MaxPool2D, Dropout
 from keras.utils import to_categorical
 import emnist
+import string
+import matplotlib.pyplot as plt
 
 import gui_py.gui
 
@@ -37,39 +39,39 @@ class NeuralCNN:
             print(BufferError)
 
     def init_training_data(self):
-        x_train = self.emnist_images[:50000]
-        y_train = self.emnist_labels[:50000]
-        x_test  = self.emnist_images[50000:]
-        y_test  = self.emnist_labels[50000:]
+        self.x_train = self.emnist_images[:50000]
+        self.y_train = self.emnist_labels[:50000]
+        self.x_test  = self.emnist_images[50000:]
+        self.y_test  = self.emnist_labels[50000:]
 
-        y_train = y_train - 1
-        y_test = y_test - 1
+        self.y_train = self.y_train - 1
+        self.y_test = self.y_test - 1
 
-        x_train.reshape((x_train.shape[0], 28, 28, 1))
-        x_test.reshape((x_test.shape[0], 28, 28, 1))
+        self.x_train.reshape((self.x_train.shape[0], 28, 28, 1))
+        self.x_test.reshape((self.x_test.shape[0], 28, 28, 1))
 
-        x_train = x_train / 255
-        x_test = x_test / 255
+        self.x_train = self.x_train / 255
+        self.x_test = self.x_test / 255
 
-        x_train = tensorflow.convert_to_tensor(x_train)
-        y_train = tensorflow.convert_to_tensor(y_train)
-        x_test = tensorflow.convert_to_tensor(x_test)
-        y_test = tensorflow.convert_to_tensor(y_test)
+        self.x_train = tensorflow.convert_to_tensor(self.x_train)
+        self.y_train = tensorflow.convert_to_tensor(self.y_train)
+        self.x_test = tensorflow.convert_to_tensor(self.x_test)
+        self.y_test = tensorflow.convert_to_tensor(self.y_test)
 
-        y_train = to_categorical(y_train, num_classes=256)
-        y_test = to_categorical(y_test, num_classes=256)
+        self.y_train = to_categorical(self.y_train, num_classes=256)
+        self.y_test = to_categorical(self.y_test, num_classes=256)
 
-        return x_train, x_test, y_train, y_test
+        return self.x_train, self.x_test, self.y_train, self.y_test
 
     def init_CNN_Model(self):
-        self.model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1))),
-        self.model.add(MaxPool2D(2, 2)),
-        self.model.add(Dropout(0.25)),
-        self.model.add(Flatten()),
-        self.model.add(Dense(64, activation='relu')),
-        self.model.add(Dense(32, activation='relu')),
-        self.model.add(Dense(16, activation='relu')),
-        self.model.add(Dense(8, activation='relu')),
+        self.model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)))
+        self.model.add(MaxPool2D(2, 2))
+        self.model.add(Dropout(0.25))
+        self.model.add(Flatten())
+        self.model.add(Dense(64, activation='relu'))
+        self.model.add(Dense(32, activation='relu'))
+        self.model.add(Dense(16, activation='relu'))
+        self.model.add(Dense(8, activation='relu'))
         self.model.add(Dense(256, activation='softmax'))
         if self.model:
             self.model_setup(self.model)
@@ -78,12 +80,24 @@ class NeuralCNN:
         self.model = model
         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
         x_train, x_test, y_train, y_test = self.init_training_data()
-        model.fit(x_train, y_train, epochs=1, batch_size=32)
-        val_loss, val_acc = model.evaluate(x_test, y_test)
-        print('validation accuracy:', val_acc)
-        print('validation loss:', val_loss)
-        gui_py.gui.gui_acc = val_acc
-        gui_py.gui.gui_loss = val_loss
+
+        self.history = model.fit(x_train, y_train, epochs=5, batch_size=32)
+        self.val_loss, self.val_acc = model.evaluate(x_test, y_test)
+
+        print('validation accuracy:', self.val_acc)
+        print('validation loss:', self.val_loss)
+        gui_py.gui.gui_acc = self.val_acc
+        gui_py.gui.gui_loss = self.val_loss
+
+    def generate_plot(self):
+        epochs = range(1, len(self.history.history['accuracy']) + 1)
+        plt.plot(epochs, self.history.history['accuracy'], label='accuracy')
+        plt.plot(epochs, self.history.history['loss'], label='loss')
+        plt.xlabel('Epochs')
+        plt.ylabel('Accuracy')
+        plt.ylim([0.5, 1])
+        plt.legend(loc='lower right')
+
 
     def image_analysis(self):
         img_src   = image_path
@@ -92,33 +106,40 @@ class NeuralCNN:
         ret, thresh = cv2.threshold(gray_image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)  # czarno-bialy odwrocony
         contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)  # znajdowanie konturow
 
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
         detected_letters = []
 
         for contour in contours:
             down_left, upper_left, down_right, upper_right = cv2.boundingRect(contour)
 
             # Jeśli obszar jest odpowiednio duży (np. eliminuje małe zakłócenia)
-            if down_right > 50 and upper_right > 50:
+            if down_right > 5 and upper_right > 5:
                 # Wyizoluj segment obrazu z literą
                 letter_image = thresh[upper_left:upper_left + upper_right, down_left:down_left + down_right]
 
                 # parametryzacja segmentu tak, aby segment=model
                 letter_image = cv2.resize(letter_image, (28, 28))
+                letter_image = letter_image.astype('float32')
 
                 letter_image = letter_image / 255.0  # Normalizacja do zakresu 0-1
                 # klasyfikacja litery
                 prediction = self.model.predict(np.array([letter_image]))
+
+                letters = string.printable
+                number_to_letter = {i + 1: letters[i] for i in range(len(letters))}
+                predictable = number_to_letter[np.argmax(self.y_test[contour])]
                 predicted_class = np.argmax(prediction)
+                detected_letter = chr(predicted_class + 65)  # +65, ponieważ EMNIST reprezentuje litery od 0 (A) do 61 (Z)
+                print(predictable)
+
 
                 # Dodanie do listy znalezionych liter
                 detected_letters.append((down_left, upper_left, down_right, upper_right, chr(predicted_class + 65)))  # +65, ponieważ EMNIST reprezentuje litery od 0 (A) do 61 (Z)
 
-            # metoda rectangle rysuje obwódke na wykrytej literce
-            for down_left, upper_left, down_right, upper_right, letter in detected_letters:
-                cv2.rectangle(thresh, (down_left, upper_left), (down_left + down_right, upper_left + upper_right), (0, 255, 0), 2)
-                cv2.putText(thresh, letter, (down_left, upper_left), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
+
+                print(len(detected_letters), detected_letter)
+
 
 
 

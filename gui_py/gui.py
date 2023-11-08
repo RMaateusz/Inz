@@ -1,7 +1,8 @@
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 import perceptron
-
 global gui_acc
 global gui_loss
 gui_acc = 0.0
@@ -17,6 +18,8 @@ class Window (QWidget):
         self.descriptionExitButton = ""
         self.descriptionWindowTitle = ""
         super(Window, self).__init__()
+        self.setStyleSheet("background-color: darkgray;")  # Zmień na kolor tła, jaki chcesz
+
         self.initUI()
         self.show()
         self.selected_file = None
@@ -41,6 +44,9 @@ class Window (QWidget):
         self.imgButton = QPushButton(self.descriptionImgButton, self)
         self.exitButton = QPushButton(self.descriptionExitButton, self)
         self.loadCNN_Sequential = QPushButton(self.descriptionLoadCNN_Sequential, self)
+        self.tensorboard_button = QPushButton("Generate chart")
+        self.scene = QGraphicsScene()
+        self.view = QGraphicsView()
 
         self.init_layout()
 
@@ -51,6 +57,14 @@ class Window (QWidget):
         self.imgButton.clicked.connect(self.create_dialog)
         self.loadCNN_Sequential.clicked.connect(self.loadCNN_Sequential_analysis)
         self.exitButton.clicked.connect(self.exit_app)
+        self.tensorboard_button.clicked.connect(self.open_tensorboard)
+
+    def open_tensorboard(self):
+        figure = perceptron.NeuralCNN.generate_plot()
+        self.view.setScene(self.scene)
+        self.canvas = FigureCanvas(figure)
+        self.scene.addWidget(self.canvas)
+        self.canvas.draw()
 
     def init_layout(self):
         self.layout = QVBoxLayout()
@@ -59,9 +73,11 @@ class Window (QWidget):
         self.layout.addWidget(self.lossResult)
         self.layout.addWidget(self.accuracyResult)
         self.layout.addWidget(self.imgButton)
+        self.layout.addWidget(self.view)
         self.messageLayout.addWidget(self.loadCNN_Sequential)
         self.layout.addWidget(self.loadCNN_Sequential)
         self.layout.addWidget(self.exitButton)
+        self.layout.addWidget(self.tensorboard_button)
 
         self.setLayout(self.layout)
         self.setLayout(self.messageLayout)
